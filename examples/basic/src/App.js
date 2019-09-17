@@ -45,13 +45,17 @@ class App extends Component {
               ? <div>Loading...</div>
               : !projects
                 ? <div>Projects not found</div>
-                : map(projects, (project, projectKey) =>
-                  <Project
-                    key={`Project-${projectKey}`}
-                    project={project}
-                    projectId={projectKey}
-                  />
-                )
+                : <div data-test="projects">
+                    Projects:
+                    {map(projects, (project, projectKey) =>
+                        <Project
+                          key={`Project-${projectKey}`}
+                          project={project}
+                          projectId={projectKey}
+                        />
+                      )
+                    }
+                </div>
           }
         </header>
       </div>

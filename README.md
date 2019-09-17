@@ -29,7 +29,7 @@ If you are interested in what drove the need for this checkout [the why section]
 1. Get the UID of created account. This will be the account which you use to login while running tests (we will call this UID `TEST_UID`)
 1. Go to project setting on firebase console and generate new private key. See how to do [here](https://sites.google.com/site/scriptsexamples/new-connectors-to-google-services/firebase/tutorials/authenticate-with-a-service-account)
 1. Save the downloaded file as `serviceAccount.json` in the root of your project (for local dev)
-1. Set service account as the `SERVICE_ACCOUNT` environment variable within your CI (make sure to wrap it in `"`)
+1. Set service account as the `SERVICE_ACCOUNT` environment variable within your CI (if you are having issus, try wrapping it in `"`)
 1. Install Cypress and add it to your package file: `npm i --save-dev cypress`
 1. Add cypress folder by calling `cypress open`
 
@@ -43,12 +43,16 @@ If you are interested in what drove the need for this checkout [the why section]
 
     ```json
     "build:testConfig": "cypress-firebase createTestEnvFile",
-    "test": "npm run build:testConfig cypress run",
-    "test:open": "npm run build:testConfig cypress open",
+    "test": "npm run build:testConfig && cypress run",
+    "test:open": "npm run build:testConfig && cypress open",
     "test:stage": "npm run test -- --env envName=stage",
     "test:open:stage": "npm run test:open -- --env envName=stage"
     ```
+
     Environment variables can be passed through `--env`. `envName` points to the firebase project within the projects section of `.firebaserc`.
+
+    Looking for shorter commands? Look at the [using short commands section below](#using-short-commands)
+
 1. Add your config info to `cypress/config.json`
   
     ```js
@@ -93,10 +97,42 @@ If you are interested in what drove the need for this checkout [the why section]
 
     The plugin sets `baseUrl` and loads config from `.firebaserc`
 
+1. Add the following to your application where you initialize your Firebase app:
+
+    ```js
+      let firebaseInstance;
+      // Handle initializeing firebase app if not already on window (when running tests)
+      if (!window.fbInstance) {
+        // Initialize Firebase instance
+        firebaseInstance = firebase.initializeApp(fbConfig)
+      }
+      // Then later use the firebase instance:
+      // Use Firestore: firebaseInstance.firestore()
+      // Or pass to react-redux-firebase: reactReduxFirebase(firebaseInstance, { userProfile: 'users' })
+    ),
+    ```
+
+    As seen in the examples:
+    * [basic example](https://github.com/prescottprue/cypress-firebase/blob/master/examples/react-redux-firebase/src/store.js#L11-L19)
+    * [react-redux-firebase example](https://github.com/prescottprue/cypress-firebase/blob/master/examples/react-redux-firebase/src/store.js#L11-L19)
+
 ### Running
 
 1. Start your local dev server (usually `npm start`) - for faster alternative checkout the [test built version section](#test-built-version)
 1. Open cypress test running by running `npm run test:open` in another terminal window
+
+### Using Short Commands
+
+The `cypress-firebase open` and `cypress-firebase run` commands both run `createTestEnvFile` to create the test environment file (`cypress.env.json`) if it doesn't already exist (it extends it if it does) then call the call the respective `cypress` command (`cypress.open` or `cypress run`).
+
+The example in the getting started guide is the same as including seperate commands for building the testEnvironmentFile `package.json`:
+
+  ```json
+  "test": "cypress-firebase run",
+  "test:open": "cypress-firebase open",
+  "test:stage": "cypress-firebase run stage",
+  "test:open:stage": "cypress-firebase open stage"
+  ```
 
 #### Test Built Version
 

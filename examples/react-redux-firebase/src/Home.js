@@ -10,30 +10,32 @@ import Project from './Project'
 import './App.css'
 
 
-const Home = ({ projects }) => (
-  <div className="App">
-    <header className="App-header">
-      <p>
-        Edit <code>src/Home.js</code> and save to reload.
-          </p>
-      <div>
-        {
-          !isLoaded(projects)
-            ? <div>Loading...</div>
-            : isEmpty(projects)
-              ? <div>Projects not found</div>
-              : projects.map((project, ind) =>
-                <Project
-                  key={`Project-${project.key}-${ind}`}
-                  project={project.value}
-                  projectId={project.key}
-                />
-              )
-        }
-      </div>
-    </header>
-  </div>
-)
+function Home({ projects }) {
+  return (
+    <div className="App">
+      <header className="App-header">
+        <p>
+          Edit <code>src/Home.js</code> and save to reload.
+        </p>
+        <div>
+          {
+            !isLoaded(projects)
+              ? <div>Loading...</div>
+              : isEmpty(projects)
+                ? <div>Projects not found</div>
+                : projects.map((project, ind) =>
+                  <Project
+                    key={`Project-${project.key}-${ind}`}
+                    project={project.value}
+                    projectId={project.key}
+                  />
+                )
+          }
+        </div>
+      </header>
+    </div>
+  )
+}
 
 
 const enhance = compose(
